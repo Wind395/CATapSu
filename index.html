@@ -23,10 +23,12 @@
       top: 45%; /* Ở giữa trái tim */
       transform: translate(-50%, -50%); /* Căn giữa văn bản */
       text-align: center;
-      color: #ff3333; /* Màu chữ đỏ tươi */
       font-size: 2.5em; /* Kích thước chữ */
       font-family: 'Segoe UI', Arial, sans-serif; /* Phông chữ đẹp */
-      text-shadow: 0 0 10px #ff3333, 0 0 20px #ff6666, 0 0 30px #ff9999; /* Hiệu ứng phát sáng */
+      background: linear-gradient(45deg, #00b7eb, #ff69b4); /* Gradient xanh dương đến hồng */
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent; /* Áp dụng gradient cho chữ */
+      text-shadow: 0 0 10px #66d9ef, 0 0 20px #ff99cc, 0 0 30px #ff99cc; /* Hiệu ứng phát sáng gradient */
       opacity: 0; /* Bắt đầu từ mờ để fade-in */
       transition: opacity 1s ease-in-out; /* Chuyển đổi mượt mà */
       z-index: 10;
@@ -135,7 +137,7 @@
       var size = image.width * ease(this.age / settings.particles.duration) * scale * brightness;
       context.globalAlpha = (1 - this.age / settings.particles.duration) * 0.8; /* Độ trong suốt */
       context.shadowBlur = 10; /* Hiệu ứng phát sáng */
-      context.shadowColor = '#ff3333';
+      context.shadowColor = '#ff69b4'; /* Màu phát sáng hồng */
       context.drawImage(image, this.position.x - size / 2, this.position.y - size / 2, size, size);
       context.shadowBlur = 0; /* Reset shadow */
     };
@@ -206,7 +208,10 @@
           context.lineTo(point.x, point.y);
         }
         context.closePath();
-        context.fillStyle = '#ff3333'; // Màu particle đỏ tươi
+        var gradient = context.createLinearGradient(0, 0, settings.particles.size, settings.particles.size);
+        gradient.addColorStop(0, '#00b7eb'); // Xanh dương
+        gradient.addColorStop(1, '#ff69b4'); // Hồng
+        context.fillStyle = gradient; // Gradient cho particle
         context.fill();
         var img = new Image();
         img.src = canvas.toDataURL();
@@ -220,7 +225,7 @@
         time = newTime;
 
         context.clearRect(0, 0, canvas.width, canvas.height);
-        // Thêm hiệu ứng nhịp đập cho toàn bộ trái tim
+        // Hiệu ứng nhịp đập cho toàn bộ trái tim
         var heartScale = 0.95 + 0.1 * Math.sin(time * 6); // Biên độ nhịp đập từ 0.95 đến 1.05
         context.save();
         context.translate(canvas.width / 2, canvas.height / 2); // Di chuyển gốc tọa độ về tâm
@@ -253,7 +258,7 @@
     })(document.getElementById("pinkboard"));
 
     // Text switching logic
-    const messages = ["Chào mấy bé", "Bọn anh là", "Cảnh sát tập sự"];
+    const messages = ["Chào em", "Anh là", "Người yêu em"]; // Nội dung mới
     const textDiv = document.getElementById("text");
     let index = 0;
 
