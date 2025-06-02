@@ -15,6 +15,7 @@
       position: absolute;
       width: 100%;
       height: 100%;
+      display: none; /* Ẩn canvas ban đầu */
     }
 
     .text-overlay {
@@ -28,10 +29,11 @@
       background: linear-gradient(45deg, #00b7eb, #ff69b4); /* Gradient xanh dương đến hồng */
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent; /* Áp dụng gradient cho chữ */
-      text-shadow: 0 0 10px #66d9ef, 0 0 20px #ff99cc, 0 0 30px #ff99cc; /* Hiệu ứng phát sáng gradient */
+      text-shadow: 0 0 10px #66d9ef, 0 0 20px #ff99cc, 0 0 30px #ff99cc; /* Hiệu ứng phát sáng */
       opacity: 0; /* Bắt đầu từ mờ để fade-in */
       transition: opacity 1s ease-in-out; /* Chuyển đổi mượt mà */
       z-index: 10;
+      display: none; /* Ẩn văn bản ban đầu */
     }
 
     .fade-in {
@@ -45,11 +47,50 @@
     .text-final {
       opacity: 1 !important; /* Giữ nguyên dòng cuối */
     }
+
+    #input-container {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 20;
+    }
+
+    #name-input {
+      padding: 10px;
+      font-size: 1.2em;
+      border: 2px solid #00b7eb;
+      border-radius: 5px;
+      background: #222;
+      color: #fff;
+      outline: none;
+    }
+
+    #submit-name {
+      padding: 10px 20px;
+      font-size: 1.2em;
+      margin-left: 10px;
+      border: none;
+      border-radius: 5px;
+      background: linear-gradient(45deg, #00b7eb, #ff69b4);
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    #submit-name:hover {
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
   <canvas id="pinkboard"></canvas>
   <div id="text" class="text-overlay"></div>
+  <div id="input-container">
+    <input type="text" id="name-input" placeholder="Nhập tên của bạn" maxlength="20">
+    <button id="submit-name">Xác nhận</button>
+  </div>
 
   <script>
     var settings = {
@@ -251,41 +292,55 @@
       }
 
       window.onresize = onResize;
-      setTimeout(() => {
-        onResize();
-        render();
-      }, 10);
-    })(document.getElementById("pinkboard"));
 
-    // Text switching logic
-    const messages = ["Chào em", "Anh là", "Người yêu em"]; // Nội dung mới
-    const textDiv = document.getElementById("text");
-    let index = 0;
+      // Xử lý nhập tên
+      const nameInput = document.getElementById('name-input');
+      const submitButton = document.getElementById('submit-name');
+      const inputContainer = document.getElementById('input-container');
+      const textDiv = document.getElementById('text');
 
-    function showMessage() {
-      textDiv.textContent = messages[index];
-      textDiv.className = "text-overlay";
-      setTimeout(() => {
-        textDiv.classList.add("fade-in"); // Hiệu ứng fade-in
-      }, 10); // Delay nhỏ để đảm bảo class được áp dụng đúng
+      submitButton.addEventListener('click', () => {
+        let name = nameInput.value.trim();
+        if (name === '') name = 'Em yêu'; // Giá trị mặc định nếu không nhập
+        inputContainer.style.display = 'none'; // Ẩn giao diện nhập tên
+        canvas.style.display = 'block'; // Hiện canvas
+        textDiv.style.display = 'block'; // Hiện văn bản
 
-      if (index < messages.length - 1) {
-        setTimeout(() => {
-          textDiv.classList.remove("fade-in");
-          textDiv.classList.add("fade-out");
+        // Cập nhật messages với tên
+        const messages = ["Chào " + name, "Anh là", "Người yêu em"];
+        let index = 0;
+
+        function showMessage() {
+          textDiv.textContent = messages[index];
+          textDiv.className = "text-overlay";
           setTimeout(() => {
-            index++;
-            textDiv.classList.remove("fade-out");
-            showMessage();
-          }, 1000); // Chờ hiệu ứng mờ xong
-        }, 3000); // Hiển thị 3 giây
-      } else {
-        // Nội dung cuối: giữ nguyên
-        textDiv.className = "text-overlay text-final fade-in";
-      }
-    }
+            textDiv.classList.add("fade-in"); // Hiệu ứng fade-in
+          }, 10); // Delay nhỏ để đảm bảo class được áp dụng đúng
 
-    showMessage();
+          if (index < messages.length - 1) {
+            setTimeout(() => {
+              textDiv.classList.remove("fade-in");
+              textDiv.classList.add("fade-out");
+              setTimeout(() => {
+                index++;
+                textDiv.classList.remove("fade-out");
+                showMessage();
+              }, 1000); // Chờ hiệu ứng mờ xong
+            }, 3000); // Hiển thị 3 giây
+          } else {
+            // Nội dung cuối: giữ nguyên
+            textDiv.className = "text-overlay text-final fade-in";
+          }
+        }
+
+        // Bắt đầu render và hiển thị văn bản
+        setTimeout(() => {
+          onResize();
+          render();
+          showMessage();
+        }, 10);
+      });
+    })(document.getElementById("pinkboard"));
   </script>
 </body>
 </html>
